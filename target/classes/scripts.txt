@@ -1,0 +1,28 @@
+#!/bin/bash
+
+cd /pulsar/bin
+
+./pulsar-admin tenants create example
+./pulsar-admin namespaces create example/example
+./pulsar-admin namespaces set-is-allow-auto-update-schema --disable example/example
+
+## TOPICS
+./pulsar-admin topics unload persistent://example/example/example
+./pulsar-admin topics delete-partitioned-topic persistent://example/example/example
+./pulsar-admin topics create-partitioned-topic --partitions 1 persistent://example/example/example
+./pulsar-admin topics create-subscription persistent://example/example/example -s example-sub
+
+./pulsar-admin topics unload persistent://example/example/out
+./pulsar-admin topics delete-partitioned-topic persistent://example/example/out
+./pulsar-admin topics create-partitioned-topic --partitions 1 persistent://example/example/out
+
+## SCHEMAS
+./pulsar-admin schemas delete persistent://example/example/example
+./pulsar-admin schemas delete persistent://example/example/out
+./pulsar-admin schemas upload \
+    --filename /pulsar/schemas/internal/Example.json \
+    persistent://example/example/example
+./pulsar-admin schemas upload \
+    --filename /pulsar/schemas/internal/Example.json \
+    persistent://example/example/out
+
